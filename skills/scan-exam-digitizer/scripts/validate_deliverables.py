@@ -12,10 +12,11 @@ from _common import extract_pdf_text, now_iso, read_json, sha256_file, write_jso
 
 
 ALLOWED_STATUSES = {"BLOCKED", "DRAFT-UNVERIFIED", "VERIFIED"}
-SUPPORTED_SCHEMA_VERSIONS = {"1.0", "1.1"}
+SUPPORTED_SCHEMA_VERSIONS = {"1.0", "1.1", "1.2"}
 CONFIRMATION_SOURCES = {"source-visual", "user"}
 LEGACY_FRESH_PASSES = ("completeness", "formula", "image", "text")
 SCHEMA_1_1_FRESH_PASSES = ("completeness", "formula", "visual-assets", "text")
+SCHEMA_1_2_FRESH_PASSES = SCHEMA_1_1_FRESH_PASSES
 REVISION_FIELDS = ("uncertainty_id", "previous_value", "current_value", "confirmed_by", "confirmed_at", "note")
 LEGACY_REPORT_HEADINGS = (
     "文档信息",
@@ -761,6 +762,34 @@ def validate_vector_build_record(
     validate_record_hash("pdf_sha256", rendered_asset, "rendered_asset")
 
 
+def validate_semantic_context(asset: dict[str, Any], label: str, errors: list[str]) -> None:
+    context = asset.get("semantic_context")
+    if not isinstance(context, dict):
+        errors.append(f"{label} semantic_context is required for schema 1.2 visual assets")
+        return
+    for field in ("question_function", "asset_function"):
+        value = context.get(field)
+        if not isinstance(value, str) or not value.strip():
+            errors.append(f"{label} semantic_context.{field} must be a non-empty string")
+    if context.get("answer_inference_excluded") is not True:
+        errors.append(f"{label} semantic_context.answer_inference_excluded must be true")
+    if context.get("source_reopened") is not True:
+        errors.append(f"{label} semantic_context.source_reopened must be true")
+    meaning_map = context.get("meaning_map")
+    if not isinstance(meaning_map, list) or not meaning_map:
+        errors.append(f"{label} semantic_context.meaning_map must be a non-empty list")
+        return
+    for index, item in enumerate(meaning_map):
+        item_label = f"{label} semantic_context.meaning_map[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{item_label} must be an object")
+            continue
+        for field in ("source_element", "rendered_element", "meaning"):
+            value = item.get(field)
+            if not isinstance(value, str) or not value.strip():
+                errors.append(f"{item_label}.{field} must be a non-empty string")
+
+
 def validate_visual_assets(manifest: dict[str, Any], package: Path, errors: list[str]) -> None:
     """Validate reconstruction provenance for figure and table asset records."""
     package = package.resolve()
@@ -788,10 +817,11 @@ def validate_visual_assets(manifest: dict[str, Any], package: Path, errors: list
     schema_version = manifest.get("schema_version")
     if not isinstance(schema_version, str) or schema_version not in SUPPORTED_SCHEMA_VERSIONS:
         return
-    schema_1_1 = schema_version == "1.1"
-    if manifest.get("status") == "VERIFIED" and assets and not schema_1_1:
-        errors.append("VERIFIED packages with visual assets require manifest schema_version 1.1")
-    if not schema_1_1:
+    visual_schema = schema_version in {"1.1", "1.2"}
+    schema_1_2 = schema_version == "1.2"
+    if manifest.get("status") == "VERIFIED" and assets and not visual_schema:
+        errors.append("VERIFIED packages with visual assets require manifest schema_version 1.1 or 1.2")
+    if not visual_schema:
         return
     if manifest.get("status") == "BLOCKED":
         return
@@ -906,6 +936,8 @@ def validate_visual_assets(manifest: dict[str, Any], package: Path, errors: list
 
     for collection_name, index, asset in assets:
         label = label_for(collection_name, index, asset)
+        if schema_1_2:
+            validate_semantic_context(asset, label, errors)
         for field in ("asset_id", "asset_type"):
             require_string(asset, label, field)
         question_id = require_string(asset, label, "question_id")
@@ -984,6 +1016,26 @@ def visual_asset_ids(manifest: dict[str, Any]) -> set[str]:
     }
 
 
+def validate_layout_contract(manifest: dict[str, Any], package: Path, errors: list[str], evidence: dict[str, object]) -> None:
+    if manifest.get("schema_version") != "1.2" or not visual_asset_ids(manifest):
+        return
+    try:
+        from layout_lint import lint_package
+
+        result = lint_package(package)
+    except Exception as exc:
+        errors.append(f"layout lint could not run: {exc}")
+        return
+    evidence["layout_lint"] = str((package / "audit" / "layout-lint.json").resolve())
+    expected_ids = visual_asset_ids(manifest)
+    checked_ids = result.get("checked_asset_ids") if isinstance(result, dict) else None
+    if result.get("status") != "PASS":
+        for error in result.get("errors", []):
+            errors.append(f"layout lint: {error}")
+    if not isinstance(checked_ids, list) or set(checked_ids) != expected_ids or len(checked_ids) != len(expected_ids):
+        errors.append("layout lint must check every visual asset exactly once")
+
+
 def validate_empty_visual_inventory(manifest: dict[str, Any], package: Path, evidence: list[str], errors: list[str]) -> None:
     inventory_ref = "audit/visual-inventory.json"
     if inventory_ref not in evidence:
@@ -1049,8 +1101,8 @@ def validate_fresh_passes(manifest: dict[str, Any], package: Path, errors: list[
     schema_version = manifest.get("schema_version")
     if not isinstance(schema_version, str) or schema_version not in SUPPORTED_SCHEMA_VERSIONS:
         return
-    schema_1_1 = schema_version == "1.1"
-    required_passes = SCHEMA_1_1_FRESH_PASSES if schema_1_1 else LEGACY_FRESH_PASSES
+    visual_schema = schema_version in {"1.1", "1.2"}
+    required_passes = SCHEMA_1_1_FRESH_PASSES if visual_schema else LEGACY_FRESH_PASSES
     if not isinstance(fresh, dict):
         errors.append("VERIFIED requires four fresh passes")
         return
@@ -1058,7 +1110,7 @@ def validate_fresh_passes(manifest: dict[str, Any], package: Path, errors: list[
         item = fresh.get(name)
         if not isinstance(item, dict) or item.get("completed") is not True or item.get("source_reopened") is not True:
             errors.append(f"fresh pass {name} must be completed with source_reopened=true")
-    if not schema_1_1:
+    if not visual_schema:
         return
 
     visual = fresh.get("visual-assets")
@@ -1130,7 +1182,7 @@ def main() -> int:
         errors.append("manifest status must be BLOCKED, DRAFT-UNVERIFIED, or VERIFIED")
     schema_version = manifest.get("schema_version")
     if not isinstance(schema_version, str) or schema_version not in SUPPORTED_SCHEMA_VERSIONS:
-        errors.append("manifest schema_version must be 1.0 or 1.1")
+        errors.append("manifest schema_version must be 1.0, 1.1, or 1.2")
     source_files = manifest.get("source_files")
     if not isinstance(source_files, list) or not source_files:
         errors.append("manifest must retain at least one frozen source file record")
@@ -1160,7 +1212,7 @@ def main() -> int:
     if required["report"].exists():
         report_text = required["report"].read_text(encoding="utf-8")
         if isinstance(schema_version, str) and schema_version in SUPPORTED_SCHEMA_VERSIONS:
-            report_headings = SCHEMA_1_1_REPORT_HEADINGS if schema_version == "1.1" else LEGACY_REPORT_HEADINGS
+            report_headings = SCHEMA_1_1_REPORT_HEADINGS if schema_version in {"1.1", "1.2"} else LEGACY_REPORT_HEADINGS
             missing_headings = [heading for heading in report_headings if heading not in report_text]
             if missing_headings:
                 errors.append(f"check report missing sections: {', '.join(missing_headings)}")
@@ -1180,6 +1232,7 @@ def main() -> int:
         errors.append("VERIFIED cannot contain unresolved uncertainties")
     validate_revision_history(manifest, errors)
     validate_visual_assets(manifest, package, errors)
+    validate_layout_contract(manifest, package, errors, evidence)
 
     if status == "VERIFIED":
         validate_fresh_passes(manifest, package, errors)

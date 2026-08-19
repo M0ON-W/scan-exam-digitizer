@@ -21,6 +21,17 @@ Preserve title, institution/course metadata, time, student-information fields, m
 
 Do not float a figure away from its question. Prefer fixed or tightly controlled placement and explicit labels in source code. A page break may move content only when question ownership remains unambiguous.
 
+### Layout contract for redrawn figures and tables
+
+Treat readability as a measurable contract, not a visual preference. Record a `layout` object for every schema 1.2 visual asset and run `scripts/layout_lint.py` after compilation. Use these defaults unless the source page makes a documented exception:
+
+- Keep text, labels, wires, borders, and other meaning-bearing marks at least 2 pt apart; a label may not cross a wire, symbol body, border, or another label.
+- Keep table cell padding at least 3 pt, row height at least 14 pt, and body font at least 8.5 pt.
+- Keep a figure/table slot inside the page box and use 65%–92% of the available text width. Reduce the slot or split the object when it would be too small or too large.
+- Check the final rendered PDF, not only the source coordinates. Any collision, clipping, overflow, illegible glyph, or materially distorted proportion blocks `VERIFIED`.
+
+The layout record must expose the page and slot rectangles, font size, width fraction, and typed element boxes for diagrams/circuits; tables additionally expose padding and row heights. This makes the collision and clipping checks reproducible without treating a source-text grep as visual QA.
+
 ## Tables and visual assets
 
 Apply the semantic-element gate and mode record in `fidelity-and-uncertainty.md` before choosing a layout tool. Do not select a tool because it creates a prettier approximation.

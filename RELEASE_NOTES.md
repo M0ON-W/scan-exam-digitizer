@@ -1,18 +1,24 @@
-# Release notes — 1.0.0 candidate
+# Release notes — 1.1.0
 
 ## Included
 
-- Scaffolded a Skills-only Codex plugin with the official `plugin-creator` scaffold.
-- Set plugin version to `1.0.0`, license to MIT, and repository metadata to the intended GitHub URL.
-- Copied the complete `scan-exam-digitizer` skill tree from the supplied, hash-verified ZIP.
-- Preserved the complete Skill content byte-for-byte from the hash-verified source ZIP and normalized only `agents/openai.yaml` product metadata from legacy tokens to the current `CHAT`/`CODEX` values required for public submission.
-- Added package-level 48×48 SVG `logo` and `composerIcon` assets required for public listing metadata; the original Skill icon remains unchanged.
-- Added draft support, privacy, terms, provenance, and review-test documents.
+- Bumped the Skills-only plugin version to `1.1.0`.
+- Made semantic review a required gate before any circuit, table, waveform, or other visual redraw: reopen the question, record the question and asset functions, map meaning-bearing elements, and exclude answer-based inference.
+- Added manifest schema `1.2` semantic provenance and a deterministic `scripts/layout_lint.py` contract for text/line collisions, table padding and row height, font size, width ratio, overflow, and clipping.
+- Added reusable LaTeX layout helpers and required `audit/layout-lint.json` evidence while retaining source crops, page mappings, comparison evidence, and uncertainty records.
+- Added regression fixtures for label/wire collisions, schema `1.2`, portable engine resolution, and a complete 25-test suite covering the digitization and PDF gates.
+- Kept the original scan as the sole factual source; no generative redraw or answer-driven completion is introduced.
+- Retained the package-level 48×48 SVG `logo` and `composerIcon` listing assets and the Skills-only boundary.
+
+## Verification notes
+
+- The canonical skill and five synchronized copies, including the Antigravity global copy, each pass the same 25-test suite.
+- WSL XeLaTeX, PDF rendering, and PDF text extraction pass the offline integration fixtures. The installed Windows Tectonic executable resolves and reports version `0.15.0`; its cached-only run lacks `circuitikz`, and its online run cannot expose the required CJK font through Windows fontconfig, so direct Tectonic compilation is not marked as a pass.
+- The official local `plugin-creator` validator still rejects the current `policy.products` field; this known validator/schema mismatch is recorded separately and does not replace the independent skill and package checks.
 
 ## Not included
 
 - No Apps, MCP servers, external connectors, hosted services, or account credentials.
-- No public GitHub repository creation, commit, push, or publication.
 - No claim that the publisher identity or copyright holder is verified.
 
 ## Remaining gates

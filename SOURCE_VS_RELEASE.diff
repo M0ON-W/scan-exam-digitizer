@@ -1,13 +1,39 @@
---- source/agents/openai.yaml
-+++ release/skills/scan-exam-digitizer/agents/openai.yaml
-@@ -8,8 +8,6 @@
-   icon_large: assets/icon.svg
- policy:
-   products:
--  - chatgpt
--  - codex
--  - api
--  - atlas
-+  - CHAT
-+  - CODEX
-   allow_implicit_invocation: true
+--- baseline: scan-exam-digitizer 1.0.0 source tree
++++ release: scan-exam-digitizer 1.1.0 skill tree
+
+The 1.1.0 tree intentionally supersedes the former metadata-only release copy.
+The original archive hash remains the immutable baseline in RELEASE_HASH.json.
+
+SKILL.md
+  + Require reopening the original question before every visual redraw.
+  + Require question function, asset function, meaning map, source-reopened,
+    and answer-inference-excluded fields before circuit/table/plot redraw.
+  + Add schema 1.2 and explicit BLOCKED/DRAFT-UNVERIFIED/VERIFIED gates.
+
+references/fidelity-and-uncertainty.md
+references/latex-and-layout.md
+references/manifest-schema.md
+references/qa-and-report.md
+  + Document semantic provenance, source fidelity, layout thresholds, and the
+    distinction between structural lint and rendered visual QA.
+
+scripts/validate_deliverables.py
+scripts/inspect_exam.py
+  + Accept and emit schema 1.2.
+  + Require semantic context and a passing layout report for visual assets.
+
+scripts/layout_lint.py [new]
+  + Detect text/line/border collisions, table padding and row-height failures,
+    font-size/width violations, overflow, and clipping.
+  + Emit audit/layout-lint.json with a deterministic PASS/FAIL status.
+
+assets/layout-helpers.tex [new]
+assets/exam-template.tex
+  + Provide shared figure, wire, label, and table layout helpers.
+
+tests/ [new and updated]
+  + Add schema 1.2, circuit/table semantic layout, collision regression,
+    portable engine resolution, and complete PDF integration coverage.
+
+agents/openai.yaml
+  + Retain the public CHAT/CODEX policy normalization from the 1.0.0 package.

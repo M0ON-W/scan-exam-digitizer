@@ -142,7 +142,7 @@ def main() -> int:
         "evidence": ["audit/visual-inventory.json"],
     }
     manifest = {
-        "schema_version": "1.1",
+        "schema_version": "1.2",
         "status": "DRAFT-UNVERIFIED",
         "created_at": now_iso(),
         "preflight_path": str(args.preflight.resolve()),

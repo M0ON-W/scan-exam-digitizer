@@ -6,7 +6,7 @@ This is a local pre-publication candidate. A public support address or issue tra
 
 Please include:
 
-1. plugin version (`1.0.0`),
+1. plugin version (`1.1.0`),
 2. operating system and Python version,
 3. the exact review-test or skill command used,
 4. the complete error text, and

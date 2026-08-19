@@ -79,6 +79,41 @@ Each entry in `figures` or `tables` is a visual asset. It requires these shared 
 
 `reproduction_mode` is exactly one of `structured-text`, `vector-redraw`, or `source-crop`; do not introduce free-form modes.
 
+## Schema 1.2 semantic and layout provenance
+
+Schema `1.2` preserves every schema 1.1 field and adds two mandatory gates for each visual asset in `figures` or `tables`. A package with visual assets may remain schema 1.1 for legacy compatibility, but any newly produced `VERIFIED` package using the semantic/layout workflow must declare schema 1.2.
+
+Each schema 1.2 visual asset contains:
+
+```json
+{
+  "semantic_context": {
+    "question_function": "The role of the question",
+    "asset_function": "The role of the figure or table",
+    "meaning_map": [
+      {"source_element": "CLK", "rendered_element": "CLK", "meaning": "clock input"}
+    ],
+    "answer_inference_excluded": true,
+    "source_reopened": true
+  },
+  "layout": {
+    "page_width_pt": 468,
+    "page_height_pt": 660,
+    "slot": {"x0": 40, "y0": 100, "x1": 420, "y1": 300},
+    "figure_width_fraction": 0.81,
+    "font_size_pt": 9,
+    "elements": [
+      {"id": "label-1", "kind": "label", "bbox": {"x0": 100, "y0": 180, "x1": 120, "y1": 194}},
+      {"id": "wire-1", "kind": "wire", "bbox": {"x0": 150, "y0": 200, "x1": 360, "y1": 202}}
+    ]
+  }
+}
+```
+
+`question_function`, `asset_function`, and every `meaning_map` field are non-empty strings. `meaning_map` must cover every meaning-bearing component, connection, label, value, unit, direction, span, and relationship visible in the source. `answer_inference_excluded` and `source_reopened` must both be `true`; answer keys and course conventions cannot replace source inspection.
+
+`layout` is deterministic evidence consumed by `scripts/layout_lint.py`. Its page and slot rectangles use finite points with `0 <= x0 < x1 <= page_width_pt` and `0 <= y0 < y1 <= page_height_pt`. Diagram/circuit assets require typed `elements`; each box must lie inside the slot. Tables instead require `cell_padding_pt`, `row_heights_pt`, and `table_width_fraction`. The linter enforces at least 2 pt between labels/text and wires/borders/other text, at least 3 pt cell padding, at least 14 pt row height, at least 8.5 pt font size, and a 0.65–0.92 width fraction. Every schema 1.2 package with visual assets must retain `audit/layout-lint.json` with `kind: "scan-exam-digitizer-layout-lint"`, `schema_version: "1.0"`, `status: "PASS"`, and exactly the reviewed asset IDs.
+
 `asset_id` values are globally unique across both `figures` and `tables`. Do not reuse a figure ID for a table or vice versa.
 
 ### Element checklists

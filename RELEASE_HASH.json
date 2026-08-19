@@ -1,15 +1,15 @@
 {
   "plugin": "scan-exam-digitizer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "hash_algorithm": "SHA-256",
   "hash_scope": "release_tree_sha256 hashes each regular file sorted by POSIX path using relative path + NUL + file bytes + NUL, excluding .git metadata and this RELEASE_HASH.json marker. remote_additive_tree_sha256 uses the same algorithm but also excludes README.md and LICENSE because those two user-created remote files are preserved byte-for-byte. The corresponding remote_preserved_file_sha256 values record those files separately. Set hashes use sorted plugin:tree lines with LF.",
-  "release_set_sha256": "528eac1a39d2a31497de04ad47a0c9c577e9a5221dbfec9a758e90fc7dd038d8",
-  "release_tree_sha256": "55a9e2fc09d7f89e627e716f28d278416a8cb3f3d3e5f5d5f9233291e0d0adb9",
-  "remote_additive_release_set_sha256": "17a654df32c482d536025064448e52b7678c7725b23d36154c813e3681d41553",
-  "remote_additive_tree_sha256": "a75062bda2172043bc4884a710d0aa8e2669093272534ac2e6e08f2d6fdd45b3",
+  "release_set_sha256": "06532201b28f5a7608bafa439de3bafa441b3a12efb820056d1154620a68f1f7",
+  "release_tree_sha256": "dd024fcdc2de4e0259fc10d8767b11354401bd4e708d0b562fb78285a663e1eb",
+  "remote_additive_release_set_sha256": "8de9fd420579403ce5b10ab15cb50b776c8b492116b678be9a148afcb72733f3",
+  "remote_additive_tree_sha256": "2208e9bb72086953d53c2c1ab0ceca4467a09f9ad8a51d592b06bfa3d86cc9aa",
   "remote_preserved_file_sha256": {
-    "README.md": "2d3309e4a5c0034e88a8aa4a1c5214aa46501390",
-    "LICENSE": "5d78ece7a49dfe8ba1d4171473a8c14ab3516e7c"
+    "README.md": "1b1ee4880a99ab9fcd47bb44018dc3d605d8ed308239d86ebe3faa9e5ff8427b",
+    "LICENSE": "c3b04563d9543b39a61dd0672fbbd6a040831f00abb87b1adfc8be917844cc15"
   },
   "source_zip_sha256": "2416082584a96362e92bdccede2c110df51ffc0ec14c323ed73a9744b115a982",
   "source_release_diff": "SOURCE_VS_RELEASE.diff"

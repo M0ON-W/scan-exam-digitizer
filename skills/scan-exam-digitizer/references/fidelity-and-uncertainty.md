@@ -40,6 +40,24 @@ For every visual object, use this ordered decision:
 
 `vector-redraw` means stored, editable text source rendered by a named deterministic toolchain. The same source, toolchain, and inputs must reproduce the asset; manual raster tracing, freehand touch-up, and output-only diagrams do not qualify. Crop-only processing may use crop, small rotation, deterministic perspective correction, background cleanup, and conservative sharpening/contrast, with every operation logged; it may not add, erase, relabel, or guess elements.
 
+### Semantic context before reconstruction
+
+Before drawing any circuit, diagram, waveform, or table, reopen the original question and write a semantic context record. The record belongs to the visual asset's manifest entry and contains:
+
+```json
+{
+  "question_function": "What the question asks the learner to determine or use",
+  "asset_function": "What role this figure or table plays in the question",
+  "meaning_map": [
+    {"source_element": "CLK", "rendered_element": "CLK", "meaning": "clock input"}
+  ],
+  "answer_inference_excluded": true,
+  "source_reopened": true
+}
+```
+
+`meaning_map` covers every meaning-bearing component, connection, label, value, unit, direction, span, and table relationship. The answer, course convention, or a visually attractive arrangement may not supply a missing element. If the question or asset function cannot be stated from the reopened scan, keep the original crop and mark the unresolved content instead of redrawing it.
+
 ### Required mode decision record
 
 For every `structured-text`, `vector-redraw`, or `source-crop` record, retain the asset/question/page IDs, source bbox, raw-crop path and hash, decision reason, typed **element checklist**, and source/output comparison evidence. `vector-redraw` also needs reconstruction source, rendered output/hash, build record, and toolchain. `structured-text` needs its editable text/formula block linkage. `source-crop` uses a structured `fallback_reason` with a controlled code and affected-elements list. Source-detail/uncertainty reasons require one raw-source anchored observation per affected element (issue code, element ID/type, page, bbox, and raw-crop/comparison reference); unavailable-capability reasons instead link only `audit/preflight.json`, the canonical `scan-exam-digitizer-preflight` record. Its nested dependency result must prove the requested capability is degradable, failed on named missing requirements, and has retained failing probe evidence. A vague sentence or hand-written `DEGRADED` JSON is invalid. Follow the exact manifest requirements in `manifest-schema.md`.

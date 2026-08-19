@@ -8,6 +8,8 @@ interface:
   icon_large: assets/icon.svg
 policy:
   products:
-  - CHAT
-  - CODEX
+  - chatgpt
+  - codex
+  - api
+  - atlas
   allow_implicit_invocation: true
