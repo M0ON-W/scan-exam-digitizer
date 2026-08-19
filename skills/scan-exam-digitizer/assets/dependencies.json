@@ -1,0 +1,175 @@
+{
+  "kind": "scan-exam-digitizer-dependency-map",
+  "schema_version": "1.0",
+  "requirements": {
+    "pillow": {
+      "id": "pillow",
+      "type": "python_module",
+      "import_name": "PIL",
+      "installation_hint": "Install runtime dependencies with: python3 -m pip install -r requirements.txt"
+    },
+    "pypdf": {
+      "id": "pypdf",
+      "type": "python_module",
+      "import_name": "pypdf",
+      "installation_hint": "Install runtime dependencies with: python3 -m pip install -r requirements.txt"
+    },
+    "unicode-latex-engine": {
+      "id": "unicode-latex-engine",
+      "type": "executable",
+      "candidates": ["xelatex", "lualatex", "tectonic"],
+      "installation_hint": "Install XeLaTeX, LuaLaTeX, or Tectonic."
+    },
+    "pdf-renderer": {
+      "id": "pdf-renderer",
+      "type": "executable",
+      "candidates": ["pdftoppm"],
+      "installation_hint": "Install Poppler utilities so pdftoppm is on PATH."
+    },
+    "font-discovery": {
+      "id": "font-discovery",
+      "type": "executable",
+      "candidates": ["fc-list"],
+      "installation_hint": "Install Fontconfig so fc-list is on PATH."
+    },
+    "cjk-font": {
+      "id": "cjk-font",
+      "type": "cjk_font",
+      "candidates": ["fc-list"],
+      "installation_hint": "Install a CJK-capable system font visible to Fontconfig."
+    },
+    "fontspec": {
+      "id": "fontspec",
+      "type": "tex_package",
+      "package": "fontspec.sty",
+      "installation_hint": "Install the TeX fontspec package."
+    },
+    "xeCJK": {
+      "id": "xeCJK",
+      "type": "tex_package",
+      "package": "xeCJK.sty",
+      "installation_hint": "Install the TeX xeCJK package and a CJK-capable system font."
+    },
+    "amsmath": {
+      "id": "amsmath",
+      "type": "tex_package",
+      "package": "amsmath.sty",
+      "installation_hint": "Install the TeX amsmath package."
+    },
+    "mathtools": {
+      "id": "mathtools",
+      "type": "tex_package",
+      "package": "mathtools.sty",
+      "installation_hint": "Install the TeX mathtools package."
+    },
+    "geometry": {
+      "id": "geometry",
+      "type": "tex_package",
+      "package": "geometry.sty",
+      "installation_hint": "Install the TeX geometry package."
+    },
+    "amssymb": {
+      "id": "amssymb",
+      "type": "tex_package",
+      "package": "amssymb.sty",
+      "installation_hint": "Install the TeX amssymb package."
+    },
+    "graphicx": {
+      "id": "graphicx",
+      "type": "tex_package",
+      "package": "graphicx.sty",
+      "installation_hint": "Install the TeX graphicx package."
+    },
+    "enumitem": {
+      "id": "enumitem",
+      "type": "tex_package",
+      "package": "enumitem.sty",
+      "installation_hint": "Install the TeX enumitem package."
+    },
+    "array": {
+      "id": "array",
+      "type": "tex_package",
+      "package": "array.sty",
+      "installation_hint": "Install the TeX array package."
+    },
+    "booktabs": {
+      "id": "booktabs",
+      "type": "tex_package",
+      "package": "booktabs.sty",
+      "installation_hint": "Install the TeX booktabs package."
+    },
+    "longtable": {
+      "id": "longtable",
+      "type": "tex_package",
+      "package": "longtable.sty",
+      "installation_hint": "Install the TeX longtable package (for example, the LaTeX tools bundle)."
+    },
+    "multirow": {
+      "id": "multirow",
+      "type": "tex_package",
+      "package": "multirow.sty",
+      "installation_hint": "Install the TeX multirow package."
+    },
+    "tikz": {
+      "id": "tikz",
+      "type": "tex_package",
+      "package": "tikz.sty",
+      "installation_hint": "Install the TeX PGF/TikZ package."
+    },
+    "circuitikz": {
+      "id": "circuitikz",
+      "type": "tex_package",
+      "package": "circuitikz.sty",
+      "installation_hint": "Install the TeX Circuitikz package."
+    },
+    "pgfplots": {
+      "id": "pgfplots",
+      "type": "tex_package",
+      "package": "pgfplots.sty",
+      "installation_hint": "Install the TeX PGFPlots package."
+    }
+  },
+  "capabilities": {
+    "base": {
+      "description": "Editable Unicode exam source, PDF rendering, PDF text extraction, and Fontconfig discovery.",
+      "requirements": ["pillow", "pypdf", "unicode-latex-engine", "pdf-renderer", "font-discovery", "cjk-font", "fontspec", "xeCJK", "amsmath", "amssymb", "mathtools", "geometry", "array", "booktabs", "graphicx", "enumitem"],
+      "degradable": false,
+      "fallback": null
+    },
+    "table": {
+      "description": "Typeset simple, long, and multirow tables as editable LaTeX.",
+      "requires": ["base"],
+      "requirements": ["array", "booktabs", "longtable", "multirow"],
+      "degradable": true,
+      "fallback": "Preserve the table as a source crop with its provenance."
+    },
+    "block-diagram": {
+      "description": "Reconstruct simple block diagrams as editable TikZ.",
+      "requires": ["base"],
+      "requirements": ["tikz"],
+      "degradable": true,
+      "fallback": "Preserve the block diagram as a source crop with its provenance."
+    },
+    "signal-flow": {
+      "description": "Reconstruct simple signal-flow diagrams as editable TikZ.",
+      "requires": ["base"],
+      "requirements": ["tikz"],
+      "degradable": true,
+      "fallback": "Preserve the signal-flow diagram as a source crop with its provenance."
+    },
+    "circuit": {
+      "description": "Reconstruct circuit diagrams as editable Circuitikz.",
+      "requires": ["base"],
+      "requirements": ["tikz", "circuitikz"],
+      "degradable": true,
+      "fallback": "Preserve the circuit diagram as a source crop with its provenance."
+    },
+    "plot-waveform": {
+      "description": "Reconstruct plots and waveforms as editable PGFPlots/TikZ.",
+      "requires": ["base"],
+      "requirements": ["tikz", "pgfplots"],
+      "degradable": true,
+      "fallback": "Preserve the plot or waveform as a source crop with its provenance."
+    }
+  }
+}
