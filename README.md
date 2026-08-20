@@ -104,3 +104,4 @@ OCR may assist with locating or drafting, but it cannot enter the final output w
 python3 skills/scan-exam-digitizer/scripts/check_dependencies.py \
   --capability base \
   --output /tmp/scan-exam-digitizer-dependencies.json
+i'm your father
