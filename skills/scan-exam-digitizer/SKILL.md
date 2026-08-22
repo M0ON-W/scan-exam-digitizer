@@ -1,38 +1,36 @@
 ---
 name: scan-exam-digitizer
-description: Use when university paper exam photos, scanned pages, multipage image sets, or image-only PDFs need faithful digitization, especially when they contain Chinese or English text, mathematical or engineering notation, tables, circuits, waveforms, plots, diagrams, skew, blur, shadows, folds, handwriting, or uncertain characters.
+description: Faithfully digitize university exam photos, scanned pages, or image-only PDFs containing text, formulas, tables, circuits, plots, or other technical figures. Use for transcription or source-faithful packaging; do not use for exam analysis or solving questions by default.
 ---
 
 # Scan Exam Digitizer
 
-## 核心契约
+## Outcome
 
-- 原始扫描件是唯一事实源；忠实转录，不改写、纠错或补全。疑似原卷错误原样保留并报告“疑似原卷如此，未擅自修改”。
-- 每个视觉对象保留原始裁剪、源坐标、哈希和比较证据；禁止生成式重建、臆测、补画或补像素。
-- 仅在视觉确认且可确定复现时使用 `structured-text`/`vector-redraw`，否则使用 `source-crop`；不清楚的内容写 `[待人工确认]`。
-- OCR、模型置信度、课程知识和答案只能定位复核区域，不能替代原图确认或改变 `VERIFIED`。
+Turn the supplied scans into the format the user requested while keeping the original scan as the factual authority. Preserve meaning and uncertainty; do not expand the job into a full archival system unless requested.
 
-## Reference 加载规则
+## Essential rules
 
-- 开始前读 [tool-routing.md](references/tool-routing.md)，按需读 [dependencies.md](references/dependencies.md)。
-- 选择模式前读 [fidelity-and-uncertainty.md](references/fidelity-and-uncertainty.md) 和 [manifest-schema.md](references/manifest-schema.md)。
-- 使用 LaTeX/TikZ/Circuitikz/PGFPlots 前读 [latex-and-layout.md](references/latex-and-layout.md)，交付前读 [qa-and-report.md](references/qa-and-report.md)。
+- Transcribe what is visible. Do not silently correct, complete, rewrite, or infer missing content from course knowledge, OCR confidence, or an answer key.
+- Use OCR as a draft or locator, then check consequential text and formulas against the scan. Mark unresolved content `[待人工确认]` and retain a source crop when it helps review.
+- Preserve meaning-bearing diagrams, circuits, tables, waveforms, and plots as traceable source crops when an exact editable reconstruction is uncertain. Do not use generative redraws for source figures.
+- Redraw a figure only when the user wants an editable version and every relevant element can be confirmed from the source. Keep the original crop alongside it when comparison matters.
+- Preserve page order and identify source pages or ranges. Do not send scans to a third-party service without the user's authorization.
 
-## 流程
+## Workflow
 
-1. 冻结输入、页序、页边界和 SHA-256，清点视觉对象及题目归属。
-2. 逐页逐题重新打开原图，先理解题目功能、图形功能、信号/表格含义，再决定重绘或裁切；不得先凭外观绘制。
-3. 运行匹配的 PRE-FLIGHT；基础能力缺失为 `BLOCKED`，条件能力缺失只让受影响对象使用 `source-crop`。
-4. 生成可编辑源、PDF、裁剪、manifest、比较证据和报告；布局必须通过 `scripts/layout_lint.py`。
-5. 分开执行完整性、公式、视觉对象和文字 fresh-pass；每轮重新打开原扫描件并回答十项一致性问题。
+1. Inspect the requested files, page order, readability, and output format. Record hashes only when the user asks for them or they are needed to distinguish or resume sources.
+2. Digitize only the requested scope. Use the simplest suitable representation: text for clear text, editable notation for clear formulas or tables, and source crops for uncertain or meaning-bearing visuals.
+3. Compare the completed output with the source at the level needed for the requested deliverable. Recheck all marked uncertainties and any content whose error would change the question.
+4. Deliver the requested files with a short note covering source range, unresolved items, and the verification actually performed. Then stop.
 
-## 语义与布局门禁
+## Scope control
 
-- Schema 1.2 的每个视觉对象必须有 `semantic_context`：`question_function`、`asset_function`、逐元素 `meaning_map`、`answer_inference_excluded: true`、`source_reopened: true`。
-- 文字/导线/边框/标签间距至少 2 pt；表格内边距至少 3 pt、行高至少 14 pt、字号至少 8.5 pt；图表占正文宽度 65%–92%，且不得越界或裁切。
-- `audit/layout-lint.json` 必须 PASS；碰撞、拥挤、比例失衡或裁切均阻止 `VERIFIED`。
+- Do not require a manifest, per-object hash, fixed schema, dependency preflight, LaTeX toolchain, layout thresholds, comparison package, or multiple independent QA passes unless the user requests that level of audit or an existing project already relies on it.
+- Do not create editable source, PDF, crops, reports, and audit files all at once unless they are requested or necessary for source fidelity.
+- A missing optional tool should degrade only the affected output. Use a faithful crop or simpler format when that still satisfies the request; block only when the requested result cannot be produced truthfully.
+- Use bundled references or scripts only when they directly help with the current requested output; their presence does not make them mandatory.
 
-## 停止与交付
+## Verification labels
 
-- 缺页、遮挡、关键内容不清或未获准使用第三方服务时停止猜测，标记 `BLOCKED`/`DRAFT-UNVERIFIED`。
-- 状态只能为 `BLOCKED`、`DRAFT-UNVERIFIED` 或 `VERIFIED`，且 manifest、报告、验证结果一致。未经用户批准，不安装、不发布、不覆盖现有 Skill。
+Use labels only when useful to the deliverable. `VERIFIED` means the requested content was checked against the source; otherwise use `DRAFT-UNVERIFIED` or clearly describe the remaining review. Never equate a structural file check with visual verification.

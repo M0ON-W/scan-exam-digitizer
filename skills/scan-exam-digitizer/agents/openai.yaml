@@ -1,9 +1,8 @@
 interface:
   display_name: Scan Exam Digitizer
-  short_description: Faithful scans with editable tables and technical figures.
-  default_prompt: Use $scan-exam-digitizer to digitize this scanned exam with deterministic
-    editable tables and technical figures, traceable source-crop fallback, and dependency
-    PRE-FLIGHT.
+  short_description: Faithful exam transcription with source-crop fallback.
+  default_prompt: Use $scan-exam-digitizer to digitize this exam faithfully in the
+    requested format, preserving uncertainty and original figures.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:
