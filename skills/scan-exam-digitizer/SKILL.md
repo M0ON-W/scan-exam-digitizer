@@ -9,6 +9,28 @@ description: Split scanned university exam PDFs by year, convert every question 
 
 Produce a separate digital package for each identified year. Each package contains editable LaTeX source, a compiled PDF, and only the original image crops that were needed because reliable redraw was not possible.
 
+## Runtime and helpers
+
+Required runtime:
+
+- Python 3.10 or newer.
+- `pypdf>=5`, `PyMuPDF>=1.24`, and `Pillow>=10`, installable with `python -m pip install -r requirements.txt`.
+- XeLaTeX, LuaLaTeX, or Tectonic.
+- For the supplied template: `ctex`, `amsmath`, `amssymb`, `mathtools`, `graphicx`, `booktabs`, `array`, `enumitem`, TikZ, Circuitikz, and PGFPlots.
+
+Use the helpers only for their direct jobs:
+
+```text
+python scripts/render_pdf_pages.py source.pdf rendered-source
+python scripts/split_pdf_by_year.py source.pdf papers --paper 2024=1-4 --paper 2023=5-8
+python scripts/crop_source_image.py rendered-source/page-001.png crops/q1.png --bbox 100 200 900 700
+python scripts/compile_latex.py 2024/exam.tex 2024/build --engine xelatex
+```
+
+`compile_latex.py` compiles the source and renders every output page into `rendered-pages`; the agent must then inspect those images as required below. Start from `assets/exam-template.tex` when no project template is supplied.
+
+
+
 ## 1. Divide the scan by year
 
 - Inspect covers, headers, dates, question numbering, page sequence, and exam/answer boundaries before transcription.
