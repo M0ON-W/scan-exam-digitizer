@@ -1,7 +1,7 @@
 {
   "name": "scan-exam-digitizer",
   "version": "1.1.0",
-  "description": "Faithfully digitize scanned university exams while preserving source evidence, uncertainty, and original figures.",
+  "description": "Split scanned exams by year and create editable LaTeX with checked PDFs.",
   "homepage": "https://github.com/M0ON-W/scan-exam-digitizer",
   "repository": "https://github.com/M0ON-W/scan-exam-digitizer",
   "author": {
@@ -18,7 +18,7 @@
   "interface": {
     "displayName": "Scan Exam Digitizer",
     "shortDescription": "Digitize scans while preserving source evidence.",
-    "longDescription": "A focused Codex skill for faithful exam transcription, explicit uncertainty, and source-crop preservation without mandatory archival machinery.",
+    "longDescription": "Split scans by year, understand and transcribe every question into LaTeX, redraw reliable figures, and visually inspect each compiled PDF.",
     "developerName": "PENDING USER CONFIRMATION: publisher identity is not verified",
     "category": "Productivity",
     "websiteURL": "https://github.com/M0ON-W/scan-exam-digitizer",
@@ -30,9 +30,9 @@
       "Analyze"
     ],
     "defaultPrompt": [
-      "Digitize this scanned exam without inventing missing content.",
-      "Record source-page ranges and uncertainty for this scan.",
-      "Preserve original figures as traceable source crops."
+      "Split this scanned PDF into separate years and create editable LaTeX.",
+      "Redraw reliable figures and retain source crops for the rest.",
+      "Compile and visually inspect every page of the year-specific PDFs."
     ]
   }
 }

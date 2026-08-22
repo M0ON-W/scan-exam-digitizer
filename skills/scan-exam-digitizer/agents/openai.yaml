@@ -1,14 +1,13 @@
 interface:
-  display_name: Scan Exam Digitizer
-  short_description: Faithful exam transcription with source-crop fallback.
-  default_prompt: Use $scan-exam-digitizer to digitize this exam faithfully in the
-    requested format, preserving uncertainty and original figures.
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  display_name: "Scan Exam Digitizer"
+  short_description: "Year-split editable LaTeX exams with rendered PDF checks"
+  default_prompt: "Use $scan-exam-digitizer to split this scan by year, create editable LaTeX, redraw reliable figures, and visually check the rendered PDFs."
+  icon_small: "assets/icon.svg"
+  icon_large: "assets/icon.svg"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
   allow_implicit_invocation: true
